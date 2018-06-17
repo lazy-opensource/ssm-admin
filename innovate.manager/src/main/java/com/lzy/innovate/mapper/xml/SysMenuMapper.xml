@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzy.innovate.mapper.SysMenuMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.lzy.innovate.entity.SysMenu">
+		<id column="uuid" property="uuid" />
+		<result column="name" property="name" />
+		<result column="url" property="url" />
+		<result column="parentId" property="parentId" />
+		<result column="status" property="status" />
+		<result column="icon" property="icon" />
+		<result column="code" property="code" />
+		<result column="remark" property="remark" />
+		<result column="createTime" property="createTime" />
+		<result column="updateTime" property="updateTime" />
+		<result column="sortCode" property="sortCode" />
+	</resultMap>
+
+	<sql id="tBaseColumn">
+		t.uuid,t.name,t.url,t.parentId,t.status,t.icon,t.code,t.remark,t.createTime,t.updateTime,t.sortCode
+	</sql>
+	<sql id="BaseColumn">
+		uuid,name,url,parentId,status,icon,code,remark,createTime,updateTime,sortCode
+	</sql>
+
+	<!--条件sql-->
+	<sql id="conditions">
+		<if test="page != null">
+			<if test="page.conditions.get('create_startTime') != null and page.conditions.get('create_endTime') != ''">
+				<![CDATA[ AND t2.createTime >= '${page.conditions.get("create_startTime")}' AND t2.createTime <= '${page.conditions.get("create_endTime")}' ]]>
+			</if>
+			<if test="page.conditions.get('update_startTime') != null and page.conditions.get('update_endTime') != ''">
+				<![CDATA[ AND t2.updateTime >= '${page.conditions.get("update_startTime")}' AND t2.updateTime <= '${page.conditions.get("update_endTime")}' ]]>
+			</if>
+			<foreach collection="page.conditions" item="value" index="key">
+				<if test="key != 'create_startTime' and key != 'create_endTime' and key != 'update_startTime' and key != 'update_endTime'">
+					<!--<if test="page.rule.get('#{key}') eq  LIKE">
+						<![CDATA[ AND ${key} LIKE CONCAT('%','${value}','%') ]]>
+					</if>-->
+					<choose>
+						<when test="page.rule.get(key) == 'LIKE'">
+							<![CDATA[ AND t2.${key} LIKE CONCAT('%','${value}','%') ]]>
+						</when>
+						<when test="page.rule.get(key) == 'LT'">
+							<![CDATA[ AND t2.${key} < '${value}' ]]>
+						</when>
+						<when test="page.rule.get(key) == 'GT'">
+							<![CDATA[ AND t2.${key} > '${value}' ]]>
+						</when>
+						<when test="page.rule.get(key) == 'LE'">
+							<![CDATA[ AND t2.${key} <= '${value}' ]]>
+						</when>
+						<when test="page.rule.get(key) == 'GE'">
+							<![CDATA[ AND t2.${key} >= '${value}' ]]>
+						</when>
+						<when test="page.rule.get(key) == 'EQ'">
+							<![CDATA[ AND t2.${key} = '${value}' ]]>
+						</when>
+						<otherwise>
+							<![CDATA[ AND t2.${key} = '${value}' ]]>
+						</otherwise>
+					</choose>
+				</if>
+			</foreach>
+			<if test="page.isSort">
+				<![CDATA[ ORDER BY #{page.sortField,jdbcType=VARCHAR} #{page.sortType,jdbcType=VARCHAR} ]]>
+			</if>
+			<if test="!page.isAll">
+				<![CDATA[ LIMIT #{page.current} , #{page.size} ]]>
+			</if>
+		</if>
+	</sql>
+
+	<!--查询当前用户下所有的菜单列表-->
+	<select id="findMenusByCondition" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT <include refid="tBaseColumn" /> FROM
+			(SELECT <include refid="BaseColumn" /> FROM (SELECT <include refid="BaseColumn" /> FROM sys_menu m WHERE m.uuid IN
+				(SELECT rm.menu_uuid FROM sys_role_menu rm WHERE rm.role_uuid IN
+					(SELECT ru.role_uuid FROM sys_role_user ru WHERE ru.user_uuid = #{userId , jdbcType=VARCHAR})))AS t2 WHERE 1=1 <include refid="conditions" /> ) AS t
+						INNER JOIN
+		(SELECT t7.uuid FROM (SELECT m2.uuid FROM sys_menu m2 WHERE m2.uuid IN
+			(SELECT gm.menu_uuid FROM sys_group_menu gm WHERE gm.group_uuid =
+				(SELECT groupId FROM sys_user WHERE uuid = #{userId , jdbcType=VARCHAR})))AS t7) AS t1
+					ON t.uuid = t1.uuid ORDER BY t.sortCode
+	</select>
+
+	<!--查询当前用户下所有的菜单列表-->
+	<select id="findMenusByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT <include refid="tBaseColumn" /> FROM
+			(SELECT <include refid="BaseColumn" /> FROM (SELECT <include refid="BaseColumn" /> FROM sys_menu m WHERE m.uuid IN
+			   (SELECT rm.menu_uuid FROM sys_role_menu rm WHERE rm.role_uuid IN
+				  (SELECT ru.role_uuid FROM sys_role_user ru WHERE ru.user_uuid = #{userId , jdbcType=VARCHAR})))AS t2 WHERE t2.status = '1') AS t
+						  INNER JOIN
+			(SELECT t7.uuid FROM (SELECT m2.uuid FROM sys_menu m2 WHERE m2.uuid IN
+			  (SELECT gm.menu_uuid FROM sys_group_menu gm WHERE gm.group_uuid =
+				 (SELECT groupId FROM sys_user WHERE uuid = #{userId , jdbcType=VARCHAR})))AS t7) AS t1
+						   ON t.uuid = t1.uuid ORDER BY t.sortCode
+	</select>
+
+	<!--查询当前用户下所有的一级菜单-->
+	<select id="findOneMenusByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT <include refid="tBaseColumn" /> FROM
+			(SELECT <include refid="BaseColumn" /> FROM (SELECT <include refid="BaseColumn" /> FROM sys_menu m WHERE m.uuid IN
+			   (SELECT rm.menu_uuid FROM sys_role_menu rm WHERE rm.role_uuid IN
+				   (SELECT ru.role_uuid FROM sys_role_user ru WHERE ru.user_uuid = #{userId , jdbcType=VARCHAR})) AND m.parentId = '0' )AS t2 WHERE t2.status = '1') AS t
+						  INNER JOIN
+			(SELECT t7.uuid FROM (SELECT m2.uuid FROM sys_menu m2 WHERE m2.uuid IN
+			  (SELECT gm.menu_uuid FROM sys_group_menu gm WHERE gm.group_uuid =
+				 (SELECT groupId FROM sys_user WHERE uuid = #{userId , jdbcType=VARCHAR})) AND m2.parentId = '0')AS t7) AS t1
+						   ON t.uuid = t1.uuid ORDER BY t.sortCode
+	</select>
+
+	<!--查询当前用户下所有属于某个菜单的子菜单-->
+	<select id="findChildMenusByParentId" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT <include refid="tBaseColumn" /> FROM
+		    (SELECT <include refid="BaseColumn" /> FROM (SELECT <include refid="BaseColumn" /> FROM sys_menu m WHERE m.uuid IN
+		        (SELECT rm.menu_uuid FROM sys_role_menu rm WHERE rm.role_uuid IN
+		            (SELECT ru.role_uuid FROM sys_role_user ru WHERE ru.user_uuid = #{userId ,jdbcType=VARCHAR})) AND m.parentId = #{parentId ,jdbcType=VARCHAR})AS t2 WHERE t2.status = '1') AS t
+		                  INNER JOIN
+		    (SELECT t7.uuid FROM (SELECT m2.uuid FROM sys_menu m2 WHERE m2.uuid IN
+		         (SELECT gm.menu_uuid FROM sys_group_menu gm WHERE gm.group_uuid =
+		             (SELECT groupId FROM sys_user WHERE uuid = #{userId , jdbcType=VARCHAR})) AND m2.parentId = #{parentId ,jdbcType=VARCHAR})AS t7) AS t1
+		                   ON t.uuid = t1.uuid ORDER BY t.sortCode
+	</select>
+
+</mapper>

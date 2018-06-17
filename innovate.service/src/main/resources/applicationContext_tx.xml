@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <tx:advice id="txAdvie" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 配置事务增强-->
+            <!--
+            PROPAGATION_REQUIRED：  支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。
+            PROPAGATION_SUPPORTS：支持当前事务，如果当前没有事务，就以非事务方式执行。
+            PROPAGATION_MANDATORY： 支持当前事务，如果当前没有事务，就抛出异常。
+            PROPAGATION_REQUIRES_NEW新建事务，如果当前存在事务，把当前事务挂起。
+             PROPAGATION_NOT_SUPPORTED：以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。
+            PROPAGATION_NEVER： 以非事务方式执行，如果当前存在事务，则抛出异常。
+            PROPAGATION_NESTED： 支持当前事务，如果当前事务存在，则执行一个嵌套事务，如果当前没有事务，就新建一个事务。
+             -->
+            <tx:method name="update*" propagation="REQUIRED" />
+            <tx:method name="edit*" propagation="REQUIRED" />
+            <tx:method name="add*" propagation="REQUIRED" />
+            <tx:method name="save*" propagation="REQUIRED" />
+            <tx:method name="del*" propagation="REQUIRED" />
+            <tx:method name="remove*" propagation="REQUIRED" />
+            <tx:method name="insert*" propagation="REQUIRED" />
+            <tx:method name="transfor*" propagation="REQUIRED" />
+            <tx:method name="drawMoney*" propagation="REQUIRED" />
+            <tx:method name="get*" propagation="REQUIRED" read-only="true" />
+            <tx:method name="find*" propagation="REQUIRED" read-only="true" />
+            <tx:method name="select*" propagation="REQUIRED" read-only="true" />
+            <tx:method name="*"  />
+        </tx:attributes>
+    </tx:advice>
+    <!--<tx:annotation-driven transaction-manager="transactionManager"/>-->
+
+    <!--切面通知织入事物 无需每个service写注解-->
+    <aop:config>
+        <aop:advisor advice-ref="txAdvie" pointcut="execution(* com.lzy.innovate.service..*.*(..))" />
+        <aop:advisor advice-ref="txAdvie" pointcut="execution(* com.lzy.innovate.service.impl..*.*(..))" />
+    </aop:config>
+</beans>

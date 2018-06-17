@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="innovate.manager:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="innovate.manager.war">
+      <element id="artifact" artifact-name="innovate.manager:war exploded" />
+    </root>
+  </artifact>
+</component>

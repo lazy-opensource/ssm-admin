@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.lzy.innovate</groupId>
+    <artifactId>innovate.config</artifactId>
+    <version>${innovate.config.version}</version>
+    <packaging>jar</packaging>
+    <parent>
+        <groupId>com.lzy.innovate</groupId>
+        <artifactId>innovate.parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../innovate.parent/pom.xml</relativePath>
+    </parent>
+
+    <build>
+        <finalName>innovate.config</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources/${env}</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+     <profiles>
+         <profile>
+             <id>dev</id>
+             <properties>
+                 <env>dev</env>
+                 <log.root.level>DEBUG</log.root.level>
+                 <log.base.file.path>logs</log.base.file.path>
+                 <log.max.size>100MB</log.max.size>
+                 <ibatis-ref><![CDATA[ <appender-ref ref="STDOUT" /><appender-ref ref="myBaties" />]]></ibatis-ref>
+                 <appender-ref><![CDATA[ <appender-ref ref="STDOUT" /><appender-ref ref="INFO" /><appender-ref ref="DEBUG" /><appender-ref ref="ERROR" />]]></appender-ref>
+                 <log_pattern><![CDATA[%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n]]]></log_pattern>
+             </properties>
+             <activation>
+                 <activeByDefault>true</activeByDefault>
+             </activation>
+
+         </profile>
+         <profile>
+             <id>test</id>
+             <properties>
+                 <env>test</env>
+                 <log.root.level>DEBUG</log.root.level>
+                 <log.base.file.path>logs</log.base.file.path>
+                 <log.max.size>100MB</log.max.size>
+                 <ibatis-ref><![CDATA[ <appender-ref ref="stdout" /><appender-ref ref="myBaties" />]]></ibatis-ref>
+                 <appender-ref><![CDATA[ <appender-ref ref="stdout" /><appender-ref ref="info" /><appender-ref ref="debug" /><appender-ref ref="error" />]]></appender-ref>
+                 <log_pattern><![CDATA[%d{yyyy-MM-dd HH:mm:ss,SSS} [%t] [%p] [%l]  %M  %5p  %m%n]]]></log_pattern>
+             </properties>
+         </profile>
+         <profile>
+             <id>pro</id>
+             <properties>
+                 <env>pro</env>
+                 <log.root.level>DEBUG</log.root.level>
+                 <log.base.file.path>logs</log.base.file.path>
+                 <log.max.size>100MB</log.max.size>
+                 <ibatis-ref><![CDATA[ <appender-ref ref="stdout" /><appender-ref ref="myBaties" />]]></ibatis-ref>
+                 <appender-ref><![CDATA[ <appender-ref ref="stdout" /><appender-ref ref="info" /><appender-ref ref="debug" /><appender-ref ref="error" />]]></appender-ref>
+                 <log_pattern><![CDATA[%d{yyyy-MM-dd HH:mm:ss,SSS} [%t] [%p] [%l]  %M  %5p  %m%n]]]></log_pattern>
+             </properties>
+         </profile>
+     </profiles>
+</project>

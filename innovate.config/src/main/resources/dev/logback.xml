@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--debug : 默认为false ，设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。-->
+<!--scan : 配置文件如果发生改变，将会重新加载，默认值为true；-->
+<!--scanPeriod : 检测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位时毫秒，当scan为true时，这个属性生效，默认时间间隔为1min。-->
+<configuration debug="false" scan="true" scanPeriod="2">
+
+    <!--<appender>  是  <configuration> 的子节点，是负责写日志的组件-->
+    <!--class 包括 ：ch.qos.logback.core.ConsoleAppender / ch.qos.logback.core.FileAppender/ ch.qos.logback.core.RollingFileAppender-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!--<encoder> : 对日志进行格式化-->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>${log_pattern}</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${log.base.file.path}/info.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base.file.path}/info-%d{yyyyMMdd}.log.%i</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>500MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>2</maxHistory>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>${log_pattern}
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <File>${log.base.file.path}/error.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base.file.path}/error-%d{yyyyMMdd}.log.%i
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>500MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>2</maxHistory>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>${log_pattern}
+            </Pattern>
+        </layout>
+    </appender>
+
+    <!--innovate.common.framework model output-->
+    <appender name="DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.base.file.path}/debug.log</file>
+
+        <!-- 设置滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--设置日志命名模式-->
+            <fileNamePattern>${log.base.file.path}/debug-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!--最多保留30天log-->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <!-- 超过150MB时，触发滚动策略 -->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder>
+            <pattern>${log_pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+        </filter>
+    </appender>
+
+    <!--myBaties sql output-->
+    <appender name="myBaties" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.base.file.path}/sql/sql.log</file>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base.file.path}/sql/sql_%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 设置日志的阈值 -->
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+
+        <!-- 超过150MB时，触发滚动策略 -->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder>
+            <pattern>${log_pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+    </appender>
+
+    <!--myBaties sql output-->
+    <appender name="_job" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.base.file.path}/job.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base.file.path}/job_%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 设置日志的阈值 -->
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+
+        <!-- 超过150MB时，触发滚动策略 -->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder>
+            <pattern>${log_pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--myBaties sql output-->
+    <appender name="_manager" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.base.file.path}/manager.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base.file.path}/manager_%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 设置日志的阈值 -->
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+
+        <!-- 超过150MB时，触发滚动策略 -->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder>
+            <pattern>${log_pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+   <!-- <logger name="com.lzy.innovate"  additivity="false">
+       ${appender-ref}
+    </logger>-->
+
+    <logger name="innovate_job"  additivity="false">
+        <appender-ref ref="_job"/>
+    </logger>
+
+    <logger name="innovate_web"  additivity="false">
+        <appender-ref ref="_web"/>
+    </logger>
+
+    <logger name="com.ibatis"  addtivity="false">
+       ${ibatis-ref}
+    </logger>
+
+    <logger name="com.baomidou"  addtivity="false">
+        ${ibatis-ref}
+    </logger>
+
+    <root level="${log.root.level}">
+        ${appender-ref}
+    </root>
+</configuration>
+
+
+
+
+

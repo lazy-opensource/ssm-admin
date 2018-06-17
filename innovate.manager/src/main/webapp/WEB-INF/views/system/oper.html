@@ -1,0 +1,171 @@
+ #parse("common/header.html")
+    <input type="hidden" id="currentMenuId" value="$!{menuId}">
+    <div class="container-fluid">
+      <div class="page-header">
+        <h4>
+          <b>操作管理</b></h4>
+      </div>
+      <div class="row">
+        <div class="col-sm-10">
+          <div class="box">
+            <div class="box-content nopadding y_tableser">
+              <div class="form-inline table_formnew">
+                <div class="form-group">
+                  <label class="control-label">操作名称：</label>
+                  <input type="text" id="nameSeach" class="form-control">
+                  <input type="hidden" id="nameSeach_q" class="form-control" value="LIKE"></div>
+                <div class="form-group">
+                  <label class="control-label">状态：</label>
+                  <select id="statusSeach"  class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="1">启用</option>
+                    <option value="2">停用</option>
+                  </select>
+                  <input type="hidden" id="statusSeach_q" class="form-control" value="EQ"></div>
+                <div class="form-group">
+                  <label class="control-label">所属菜单：</label>
+                  <select id="menuIdSeach" name='menuIdSeach' class="form-control">
+                    <option value=''>--请选择--</option></select>
+                  <input type="hidden" id="menuIdSeachd_q" class="form-control" value="EQ"></div>
+                <div class="form-group">
+                  <label class="control-label">创建时间：</label>
+                  <input type="text" id="createTimeS" class="form-control form_datetime ">-
+                  <input type="text" id="createTimeE" class="form-control form_datetime">
+                  <input type="hidden" id="createTimeS_q" class="form-control" value="GE">
+                  <input type="hidden" id="createTimeE_q" class="form-control" value="LE"></div>
+                <div class="form-group">
+                  <label class="control-label">修改时间：</label>
+                  <input type="text" id="updateTimeS" class="form-control form_datetime ">-
+                  <input type="text" id="updateTimeE" class="form-control form_datetime">
+                  <input type="hidden" id="updateTimeS_q" class="form-control" value="GE">
+                  <input type="hidden" id="updateTimeE_q" class="form-control" value="LE"></div>
+                <div class="form-group" id="oper-btn">
+                  <button class="btn btn-primary search" title="查询" rel="tooltip">查询</button>
+                  <button class="btn btn-default" onclick="javascript:current.clearSearch();" title="清空" rel="tooltip">清空</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover table-nomargin table-striped dataTable dataTable-reorder"
+               id="user_list_table">
+          <thead>
+          <tr>
+            <th class='with-checkbox'>
+              <input type="checkbox" name="check_all" id="check_all">
+            </th>
+            <th width="20%"></th>
+            <th width="10%"></th>
+            <th width="10%"></th>
+            <th width="10%"></th>
+            <th width="10%"></th>
+            <th width="15%"></th>
+            <th width="15%"></th>
+            <th width="10%"></th>
+          </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+      <!-- edit model start -->
+      <form id="operForm">
+        <div class="modal fade" id="operModal" tabindex="-1" role="dialog" aria-labelledby="operModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="operModalLabel">新增</h4></div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="name" class="col-sm-4 control-label">操作名称：</label>
+                  <input type="text" class="form-control" name="name" id="name" placeholder="操作名称"></div>
+                <div class="form-group">
+                  <label for="url" class="col-sm-2 control-label">URL:</label>
+                  <input type="text" class="form-control" name="url" id="url" placeholder="自定义URL"></div>
+                <div class="form-group">
+                  <label for="code" class="col-sm-2 control-label">权限码:</label>
+                  <input type="text" class="form-control" name="code" id="code" placeholder="权限码"></div>
+                <div class="form-group">
+                  <label for="sortCode" class="col-sm-2 control-label">优先级:</label>
+                  <input type="text" class="form-control" name="sortCode" id="sortCode" placeholder="数字越小优先级越高"></div>
+                <div class="form-group">
+                  <label for="status" class="col-sm-2 control-label">状态:</label>
+                  <select id="status">
+                    <option value="1">默认启用</option>
+                    <option value="2">停用</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="remark" class="col-sm-2 control-label">备注：</label>
+                  <input type="text" class="form-control" name="remark" id="remark" placeholder="备注"></div>
+              </div>
+              <div class="modal-footer">
+                <a class="btn btn-default" href="javascript:current.clear();" title="清空" rel="tooltip">清空</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="save">保存</button></div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <!-- edit model end -->
+      <!-- message model start -->
+      <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="messageModalLabel">成功</h4></div>
+            <div class="modal-body" id="messageModalBody"></div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button></div>
+          </div>
+        </div>
+      </div>
+      <!-- message model end -->
+      <!-- menu model start -->
+      <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="menuModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="menuModalLabel">所属菜单详情</h4></div>
+            <div class="modal-body">
+              <div class="form-group">
+                <h4><b>所属角色:</b></h4><span id='belongRoles'></span>
+              </div>
+              <div class="form-group">
+                <h4><b>所属用户组:</b></h4><span id='belongGroups'></span>
+              </div>
+              <div class="form-group">
+                <h4><b>所属菜单:</b></h4><span id='belongMenu'></span>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button></div>
+          </div>
+        </div>
+      </div>
+      <!-- menu model end -->
+      <!-- menu model start -->
+      <div class="modal fade" id="contactMenuModal" tabindex="-1" role="dialog" aria-labelledby="contactMenuModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="contactMenuModalLabel">关联菜单</h4></div>
+            <div class="modal-body">
+              <div id='menuTree'></div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id='contactMenu'>关联</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" onclick="javascript:current.initMenuTree();">取消</button></div>
+          </div>
+        </div>
+      </div>
+      <script id="currentPage" src="#springUrl('/static/js/require.min.js')" data-target="local/system/oper"
+              data-main="#springUrl('/static/js/config.js')" type="text/javascript">
+      </script>
+#parse("common/footer.html")

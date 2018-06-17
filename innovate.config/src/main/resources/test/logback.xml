@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="log.root.level" value="${log.root.level}" />
+    <property name="log.base.file.path" value="${log.base.file.path}" />
+    <property name="innovate.service" value="${innovate.service}" />
+    <property name="innovate.web" value="${innovate.service}" />
+    <property name="common.framework" value="${common.framework}" />
+    <property name="log.max.size" value="100MB" />
+
+    <!--控制台输出 -->
+    <appender name="${stdout}" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%date{yyyy-MM-dd HH:mm:ss} %-5level[%thread]%logger{56}.%method:%L -%msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <!--innovate.service model output-->
+    <appender name="${innovate_service}" class="ch.qos.logback.core.rolling.DailyRollingFileAppender">
+        <file>${log.base.file.path}/${innovate_service}-%d{yyyy-MM-dd HH:mm:ss}.log</file>
+
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%thread]%logger{56}.%method:%L -%msg%n</pattern>
+        </layout>
+    </appender>
+
+    <!--innovate.web model output-->
+    <appender name="${innovate_web}" class="ch.qos.logback.core.rolling.DailyRollingFileAppender">
+        <file>${log.base.file.path}/${innovate_web}.log</file>
+
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{56}.%method:%L -%msg%n</pattern>
+        </layout>
+    </appender>
+
+    <!--innovate.common.framework model output-->
+    <appender name="${common_framework}" class="ch.qos.logback.core.rolling.DailyRollingFileAppender">
+        <file>${log.base.file.path}/${common_framework}.log</file>
+
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{56}.%method:%L - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <!--myBaties sql output-->
+    <appender name="myBaties" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.base.file.path}/sql/sql.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base.file.path}/sql/sql_%d{yyyy-MM-dd HH:mm:ss}.log</fileNamePattern>
+            <!-- 设置日志的阈值 -->
+            <maxFileSize>${maxHistory}</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/errors/errors.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base.file.path}/errors/errors_%d{yyyy-MM-dd HH:mm:ss}.log</fileNamePattern>
+            <!-- 设置日志的阈值 -->
+            <maxFileSize>${maxHistory}</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <logger name="${innovate_service}" additivity="false">
+        ${innovate_service_ref}
+        ${stdout_ref}
+    </logger>
+
+    <logger name="${innovate_web}" additivity="false">
+        ${innovate_web_ref}
+        ${stdout_ref}
+    </logger>
+
+    <logger name="${common_framework}" additivity="false">
+        ${common_framework_ref}
+        ${stdout_ref}
+    </logger>
+
+    <logger name="com.ibatis" addtivity="false">
+        <appender-ref ref="myBatiesSql"/>
+        ${stdout_ref}
+    </logger>
+
+    <root level="${log.root.level}">
+        <appender-ref ref="stdout" /> <!--  标识这个appender将会添加到这个logger -->
+    </root>
+    <root level="ERROR">
+        <appender-ref ref="error"/>
+    </root>
+</configuration>
+
+
+
+
+

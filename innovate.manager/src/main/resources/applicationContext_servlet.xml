@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- 扫描 controller -->
+    <!-- Bean Annotation -->
+    <context:component-scan base-package="com.lzy.innovate.controller">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <mvc:annotation-driven />
+    <mvc:default-servlet-handler />
+    <mvc:view-controller path="/" view-name="redirect:/index/toLogin" />
+
+    <!-- 配置静态资源，直接映射到对应的文件夹，DispatcherServlet 不处理 -->
+    <mvc:resources mapping="/static/**" location="/WEB-INF/static/" />
+
+    <mvc:annotation-driven>
+        <!-- 编码转换 -->
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/plain;charset=UTF-8</value>
+                        <value>text/html;charset=UTF-8</value>
+                        <value>application/json;charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- KISSO 初始化 -->
+    <bean id="kissoInit" class="com.baomidou.kisso.web.WebKissoConfigurer" init-method="initKisso">
+        <property name="ssoPropPath" value="properties/sso.properties" />
+    </bean>
+
+    <mvc:interceptors>
+        <!-- SSO 拦截器 -->
+        <!-- path 对所有的请求拦截使用/**，对某个模块下的请求拦截使用：/myPath/* -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <bean class="com.baomidou.kisso.web.interceptor.SSOSpringInterceptor" />
+        </mvc:interceptor>
+        <!-- 权限拦截器 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <bean class="com.lzy.innovate.permission.PermissionInterceptor">
+                <property name="authorization">
+                    <bean class="com.lzy.innovate.permission.PermissionImpl"/>
+                </property>
+                <property name="illegalUrl" value="/system/noPer"/>
+            </bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <bean id="springUtil" class="com.lzy.innovate.utils.SpringUtils" />
+
+    <!-- 配置velocity引擎 start-->
+    <bean id="velocityConfigurer"
+          class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+        <property name="resourceLoaderPath" value="/WEB-INF/views/" /><!-- 模板存放的路径 -->
+        <property name="configLocation" value="classpath:/properties/velocity.properties" />
+    </bean>
+    <!-- 配置velocity引擎 end-->
+
+
+    <!-- 配置视图的显示 start-->
+    <bean id="ViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver">
+        <property name="cache" value="false" />
+        <property name="suffix" value=".html" /><!-- 视图文件的后缀名 -->
+        <property name="toolboxConfigLocation" value="WEB-INF/toolbox.xml" /><!--toolbox配置文件路径-->
+        <property name="dateToolAttribute" value="date" /><!--日期函数名称-->
+        <property name="numberToolAttribute" value="number" /><!--数字函数名称-->
+        <property name="contentType" value="text/html;charset=UTF-8" />
+        <property name="layoutUrl" value="layout/default.vm"/><!--指定layout文件-->
+    </bean>
+    <!-- 配置视图的显示 end-->
+
+    <!-- beet视图解析器 start-->
+    <!--<bean name="beetlConfig" class="com.wangzhixuan.common.BeetlConfiguration" init-method="init">
+        <property name="configFileResource" value="classpath:properties/beetl.properties" />
+    </bean>
+    <bean name="viewResolver" class="org.beetl.ext.spring.BeetlSpringViewResolver">
+        <property name="suffix" value=".html" />
+        <property name="contentType" value="text/html;charset=UTF-8" />
+    </bean>-->
+    <!-- beet视图解析器 end-->
+
+    <!-- jsp 视图解析器 start -->
+   <!-- <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>-->
+    <!-- jsp 视图解析器 end -->
+
+    <!--配置全局日期格式模板，如果单个实体字段可直接使用注解@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")-->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+                        <property name="dateFormat">
+                            <bean class="java.text.SimpleDateFormat">
+                                <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss" />
+                            </bean>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <!--配置全局日期格式 end-->
+
+</beans>

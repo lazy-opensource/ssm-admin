@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${jdbc_driver}"></property>
+        <property name="url" value="${jdbc_url}"></property>
+        <property name="username" value="${jdbc_username}"></property>
+        <property name="password" value="${jdbc_pasword}"></property>
+        <property name="initialSize" value="${initialSize}" />
+        <property name="minIdle" value="${minIdle}" />
+        <property name="maxActive" value="${maxActive}" />
+        <property name="maxWait" value="${maxWait}" />
+        <property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}" />
+        <property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}" />
+        <property name="validationQuery" value="SELECT 'x'" />
+        <property name="testWhileIdle" value="true" />
+        <property name="testOnBorrow" value="false" />
+        <property name="testOnReturn" value="false" />
+
+        <!--打开PSCache，并且指定每个连接上PSCache的大小 ,注意：如果用Oracle，则把poolPreparedStatements配置为true，mysql可以配置为false。 -->
+        <property name="poolPreparedStatements" value="false" />
+        <property name="maxPoolPreparedStatementPerConnectionSize"
+                  value="20" />
+    </bean>
+
+
+    <!--spring和MyBatis整合，不需要mybatis的配置映射文件-->
+    <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean">
+        <!--数据源-->
+        <property name="dataSource" ref="dataSource" />
+        <!--实体别名，减少mapper.xml代码量-->
+        <property name="typeAliasesPackage" value="com.lzy.innovate.entity" />
+        <!-- 自动扫描mapping.xml文件 -->
+        <property name="mapperLocations" value="classpath*:com/lzy/innovate/mapper/xml/*Mapper.xml"></property>
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml" />
+        <property name="plugins">
+            <array>
+                <bean id="paginationInterceptor" class="com.baomidou.mybatisplus.plugins.PaginationInterceptor">
+                    <property name="dialectType" value="mysql" />
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!-- 主库
+    <bean name="master-dataSource" parent="baseDataSource" init-method="init">
+        <property name="url" value="${master_driverUrl}" />
+        <property name="username" value="${master_username}" />
+        <property name="password" value="${master_password}" />
+    </bean>
+    -->
+    <!-- 从库
+    <bean name="slave-dataSource" parent="baseDataSource" init-method="init">
+        <property name="url" value="${slave_driverUrl}" />
+        <property name="username" value="${slave_username}" />
+        <property name="password" value="${slave_password}" />
+    </bean>
+	-->
+    <!--数据源切面注入spring
+    <bean id="dsChangeAspect" class="com.wangzhixuan.aop.DataSourceAspect"/>
+	-->
+    <!--主从库选择
+    <bean id="dynamicDataSource" class="com.wangzhixuan.datasource.DynamicDataSource">
+        <property name="master" ref="master-dataSource"/>
+        <property name="slaves">
+            <list>
+                <ref bean="slave-dataSource"/>
+            </list>
+        </property>
+    </bean>
+    -->
+</beans>

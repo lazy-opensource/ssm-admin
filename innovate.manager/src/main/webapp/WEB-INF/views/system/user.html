@@ -1,0 +1,237 @@
+#parse("common/header.html")
+<input type="hidden" id="currentMenuId" value="$!{menuId}">
+<div class="container-fluid">
+    <div class="page-header">
+        <h4><b>用户管理</b></h4>
+    </div>
+    <div class="row">
+        <div class="col-sm-10">
+            <div class="box">
+                <div class="box-content nopadding y_tableser">
+                    <div class="form-inline table_formnew">
+
+                        <div class="form-group">
+                            <label class="control-label">用户名：</label>
+                            <input type="text" id="nameSeach" class="form-control">
+                            <input type="hidden" id="nameSeach_q" class="form-control" value="LIKE">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">状态：</label>
+                            <select name="" id="statusSeach" class="form-control">
+                                <option value="">-- 请选择 --</option>
+                            </select>
+                            <input type="hidden" id="statusSeach_q" class="form-control" value="EQ">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">用户组/部门：</label>
+                            <select name="" id="groupIdSeach" class="form-control">
+                                <option value="">-- 请选择 --</option>
+                            </select>
+                            <input type="hidden" id="groupIdSeach_q" class="form-control" value="EQ">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">创建时间：</label>
+                            <input type="text" id="createTimeS" class="form-control form_datetime "> -
+                            <input type="text" id="createTimeE" class="form-control form_datetime">
+                            <input type="hidden" id="createTimeS_q" class="form-control" value="GE">
+                            <input type="hidden" id="createTimeE_q" class="form-control" value="LE">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">修改时间：</label>
+                            <input type="text" id="updateTimeS" class="form-control form_datetime "> -
+                            <input type="text" id="updateTimeE" class="form-control form_datetime">
+                            <input type="hidden" id="updateTimeS_q" class="form-control" value="GE">
+                            <input type="hidden" id="updateTimeE_q" class="form-control" value="LE">
+                        </div>
+
+                        <div class="form-group" id="oper-btn">
+                            <button class="btn btn-primary search" title="查询" rel="tooltip">查询</button>
+                            <button class="btn btn-default" id="clearSeach" title="清空" rel="tooltip">清空</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-nomargin table-striped dataTable dataTable-reorder"
+               id="user_list_table">
+            <thead>
+            <tr>
+                <th class='with-checkbox'>
+                    <input type="checkbox" name="check_all" id="check_all">
+                </th>
+                <th width="15%"></th>
+                <th width="15%"></th>
+                <th width="10%"></th>
+                <th width="20%"></th>
+                <th width="20%"></th>
+                <th width="10%"></th>
+                <th width="10%"></th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- edit model start -->
+    <form id="userForm" method='post'>
+        <input type="hidden" id="hidden-id" name="id">
+        <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
+                        <h4 class="modal-title" id="userModalLabel">新增</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="loginName" class="col-sm-2 control-label">姓名：</label>
+                            <input type="text" class="form-control" name="loginName" id="loginName" placeholder="姓名">
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="col-sm-2 control-label">邮箱：</label>
+                            <input type="email" class="form-control" name="email" id="email" placeholder="邮箱">
+                        </div>
+                        <div class="form-group" id="password_div">
+                            <label for="password" class="col-sm-2 control-label">密码：</label>
+                            <input type="password" class="form-control" name="password" id="password" placeholder="密码">
+                        </div>
+                        <div class="form-group" id="password_confirm_div">
+                            <label for="password_confirm" class="col-sm-4 control-label">确认密码：</label>
+                            <input type="password" class="form-control" name="password_confirm" id="password_confirm"
+                                   placeholder="确认密码">
+                        </div>
+                        <div class="form-group hidden" id="status_div">
+                            <label for="status" class="col-sm-2 control-label">状态：</label>
+                            <select name="status" id='status' class="selectpicker">
+                                <option value="">--请选择--</option>
+                            </select>
+                            <input type='hidden' name="status">
+                        </div>
+                        <div class="form-group">
+                            <label for="remark" class="col-sm-2 control-label">备注：</label>
+                            <input type="text" class="form-control" id="remark" placeholder="备注">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" id="clearForm" title="清空" rel="tooltip">清空</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button class="btn btn-primary" id="save">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- edit model end -->
+    <!-- message model start -->
+    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="messageModalLabel">成功</h4>
+                </div>
+                <div class="modal-body" id="messageModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- message model end -->
+
+    <!-- userGroup model start -->
+    <div class="modal fade" id="userGroupModal" tabindex="-1" role="dialog" aria-labelledby="userGroupModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="userGroupModalLabel">选择用户组/部门</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="userGroupModalBody"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="current.contactGroup();">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- userGroup model end -->
+
+    <!-- userDetail model start -->
+    <div class="modal fade" id="userDetailModal" tabindex="-1" role="dialog" aria-labelledby="userDetailModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="userDetailModalLabel">详情</h4>
+                </div>
+                <div class="modal-body" id="userDetailModalBody">
+
+                    <div class="form-group">
+                        <h4><b>所属角色:</b></h4><span id='belongUserRoles'></span>
+                    </div>
+                    <div class="form-group">
+                        <h4><b>所属用户组/部门:</b></h4><span id='belongUserGroups'></span>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- userDetail model end -->
+
+    <!-- groupRoles model start -->
+    <div class="modal fade" id="userContactRoleModal" tabindex="-1" role="dialog"
+         aria-labelledby="userContactRoleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="userContactRoleModalLabel">关联角色</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>可关联角色</label>
+                        <select class="form-control" multiple="multiple" id="userCanContactRoles"></select>
+                        <botton class="btn btn-xs btn-info" id="addRole">关联选中</botton>
+                        <botton class="btn btn-xs btn-info" id="addAllRoles">关联全部</botton>
+                        <br><br>
+                        <label>待关联角色</label>
+                        <select class="form-control" multiple="multiple" id="userHaveContactRoles"></select>
+
+
+                        <botton class="btn btn-xs btn-info" id="removeRole">取消选中</botton>
+                        <botton class="btn btn-xs btn-info" id="removeAllRoles">取消全部</botton>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="javascript:current.contactRoles()">确定
+                        </button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- groupRoles model end -->
+    </div>
+    <script id="currentPage" src="#springUrl('/static/js/require.min.js')" data-target="local/system/user"
+            data-main="#springUrl('/static/js/config.js')" type="text/javascript">
+    </script>
+    #parse("common/footer.html")

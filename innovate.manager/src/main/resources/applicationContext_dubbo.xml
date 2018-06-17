@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+    <dubbo:application name="innovate.web" />
+
+    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181,127.0.0.1:2182" />
+
+    <!-- loadbalance = random,roundrobin,leastactive，分别表示：随机，轮循，最少活跃调用-->
+    <!-- 订阅服务 -->
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.IDemoServiceSoa" id="demoServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysGroupMenuServiceSoa" id="sysGroupMenuServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysGroupOperServiceSoa" id="sysGroupOperServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysGroupServiceSoa" id="sysGroupServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysMenuServiceSoa" id="sysMenuServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysOperServiceSoa" id="sysOperServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysRoleGroupServiceSoa" id="sysRoleGroupServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysRoleMenuServiceSoa" id="sysRoleMenuServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysRoleOperServiceSoa" id="sysRoleOperServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysRoleServiceSoa" id="sysRoleServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysRoleUserServiceSoa" id="sysRoleUserServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+    <dubbo:reference interface="com.lzy.innovate.dubbo.system.ISysUserServiceSoa" id="sysUserServiceSoaImpl" loadbalance="leastactive" version="1.0" />
+</beans>

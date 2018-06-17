@@ -1,0 +1,24 @@
+#parse("common/header.html")
+<!-- 导航nav start-->
+<div id="navigation"></div>
+<!-- 导航nav end -->
+
+<!-- 流式布局start -->
+<div class="container-fluid">
+    <div class="row">
+        <!--sideBar-->
+        <div class="col-lg-3">
+            <div id="sidebar_div"></div>
+        </div>
+        <!--context-->
+        <div class="col-lg-9" id="content_div">
+            <iframe src="" name='content' id="content" frameborder="0" width="100%" scrolling="yes" marginheight="0" marginwidth="0" >
+            </iframe>
+        </div>
+    </div>
+</div>
+
+<!-- 流式布局end -->
+<script type ="text/javascript" id="currentPage" data-main="#springUrl('/static/js/config.js')" data-target="local/index" src="#springUrl('/static/js/require.min.js')"></script>
+
+#parse("common/footer.html")
